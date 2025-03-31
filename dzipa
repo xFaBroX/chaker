@@ -1,0 +1,34 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local targetPosition = Vector3.new(20728.957, -33.7493744, -12787.4111)
+local stayTime = 2  -- czas przebywania w miejscu docelowym
+local startTime = 0
+local isAtTarget = false
+
+while true do
+    wait(60)  -- krótszy czas odświeżania
+
+    if humanoidRootPart then
+        local currentPosition = humanoidRootPart.Position
+        local distance = (currentPosition - targetPosition).magnitude
+
+        if distance > 1 then  -- jeśli odległość od celu jest większa niż 1 jednostka
+            humanoidRootPart.CFrame = CFrame.new(targetPosition)
+            print("Teleportacja...")
+            startTime = tick()  -- resetujemy licznik czasu po teleportacji
+            isAtTarget = false
+        else
+            if not isAtTarget then
+                startTime = tick()  -- rozpoczęcie liczenia czasu po dotarciu na miejsce
+                isAtTarget = true
+            elseif tick() - startTime >= stayTime then
+                print("Teleportacja zakończona!")
+                break  -- zakończ pętlę po przebywaniu w miejscu przez określony czas
+            end
+        end
+    else
+        warn("Nie znaleziono HumanoidRootPart!")
+    end
+end
